@@ -21,7 +21,7 @@ type ModelDaoMysql struct {
 func InitDB(dataSourceName string) (*ModelDaoMysql, error) {
 	var err error
 
-	db, err := sqlx.Open("mysql", "root:1q2w3e4r!@(localhost:3306)/signoz_meta?parseTime=true")
+	db, err := sqlx.Open("mysql", "signoz:zmffhdlt#101@(3.35.121.170:13306)/signoz_meta?parseTime=true")
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to Open mysql DB")
 	}

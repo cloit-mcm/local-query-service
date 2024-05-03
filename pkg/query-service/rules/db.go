@@ -71,7 +71,7 @@ func (r *ruleDB) CreateRuleTx(ctx context.Context, rule string) (int64, Tx, erro
 		return lastInsertId, nil, err
 	}
 
-	stmt, err := tx.Prepare(`INSERT into rules (created_at, created_by, updated_at, updated_by, data) VALUES($1,$2,$3,$4,$5);`)
+	stmt, err := tx.Prepare(`INSERT into rules (created_at, created_by, updated_at, updated_by, data) VALUES(?,?,?,?,?);`)
 	if err != nil {
 		zap.L().Error("Error in preparing statement for INSERT to rules", zap.Error(err))
 		tx.Rollback()

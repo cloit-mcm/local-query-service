@@ -86,7 +86,7 @@ func (r *Repo) insertPipeline(
 
 	insertQuery := `INSERT INTO pipelines 
 	(id, order_id, enabled, created_by, created_at, name, alias, description, filter, config_json) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	_, err = r.db.ExecContext(ctx,
 		insertQuery,
@@ -131,8 +131,8 @@ func (r *Repo) getPipelinesByVersion(
 			 agent_config_versions v
 		WHERE r.id = e.element_id
 		AND v.id = e.version_id
-		AND e.element_type = $1
-		AND v.version = $2
+		AND e.element_type = ?
+		AND v.version = ?
 		ORDER BY order_id asc`
 
 	err := r.db.SelectContext(ctx, &pipelines, versionQuery, logPipelines, version)

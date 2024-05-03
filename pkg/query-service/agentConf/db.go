@@ -126,11 +126,11 @@ func (r *Repo) GetLatestVersion(
 		deploy_status, 
 		deploy_result 
 		FROM agent_config_versions AS v
-		WHERE element_type = $1 
+		WHERE element_type = ? 
 		AND version = ( 
 			SELECT MAX(version) 
 			FROM agent_config_versions 
-			WHERE element_type=$2)`, typ, typ)
+			WHERE element_type=?)`, typ, typ)
 
 	if err == sql.ErrNoRows {
 		return nil, model.NotFoundError(err)
@@ -184,8 +184,8 @@ func (r *Repo) insertConfig(
 	defer func() {
 		if fnerr != nil {
 			// remove all the damage (invalid rows from db)
-			r.db.Exec("DELETE FROM agent_config_versions WHERE id = $1", c.ID)
-			r.db.Exec("DELETE FROM agent_config_elements WHERE version_id=$1", c.ID)
+			r.db.Exec("DELETE FROM agent_config_versions WHERE id = ?", c.ID)
+			r.db.Exec("DELETE FROM agent_config_elements WHERE version_id=?", c.ID)
 		}
 	}()
 
@@ -200,7 +200,7 @@ func (r *Repo) insertConfig(
 		disabled,
 		deploy_status, 
 		deploy_result) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	_, dbErr := r.db.ExecContext(ctx,
 		configQuery,
@@ -224,7 +224,7 @@ func (r *Repo) insertConfig(
 		version_id, 
 		element_type, 
 		element_id) 
-	VALUES ($1, $2, $3, $4)`
+	VALUES (?, ?, ?, ?)`
 
 	for _, e := range elements {
 		_, dbErr = r.db.ExecContext(

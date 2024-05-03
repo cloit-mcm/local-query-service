@@ -120,7 +120,7 @@ func (r *ruleDB) EditRuleTx(ctx context.Context, rule string, id string) (string
 	//if err != nil {
 	//	return groupName, tx, err
 	//}
-	stmt, err := r.Prepare(`UPDATE rules SET updated_by=$1, updated_at=$2, data=$3 WHERE id=$4;`)
+	stmt, err := r.Prepare(`UPDATE rules SET updated_by=?, updated_at=?, data=? WHERE id=?;`)
 	if err != nil {
 		zap.L().Error("Error in preparing statement for UPDATE to rules", zap.Error(err))
 		// tx.Rollback()

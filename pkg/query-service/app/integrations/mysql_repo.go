@@ -24,7 +24,7 @@ func InitSqliteDBIfNeeded(db *sqlx.DB) error {
 	_, err := db.Exec(createTablesStatements)
 	if err != nil {
 		return fmt.Errorf(
-			"could not ensure integrations schema in sqlite DB: %w", err,
+			"could not ensure integrations schema in mysql DB: %w", err,
 		)
 	}
 
@@ -128,10 +128,10 @@ func (r *InstalledIntegrationsSqliteRepo) upsert(
 			INSERT INTO integrations_installed (
 				integration_id,
 				config_json
-			) values ($1, $2)
-			on conflict(integration_id) do update
-				set config_json=excluded.config_json
-		`, integrationId, serializedConfig,
+			) values (?, ?)
+			on duplicate key update
+				config_json = ?
+		`, integrationId, serializedConfig, serializedConfig,
 	)
 	if dbErr != nil {
 		return nil, model.InternalError(fmt.Errorf(

@@ -149,7 +149,7 @@ func (r *ruleDB) DeleteRuleTx(ctx context.Context, id string) (string, Tx, error
 	// 	return groupName, tx, err
 	// }
 
-	stmt, err := r.Prepare(`DELETE FROM rules WHERE id=$1;`)
+	stmt, err := r.Prepare(`DELETE FROM rules WHERE id=?;`)
 
 	if err != nil {
 		return groupName, nil, err

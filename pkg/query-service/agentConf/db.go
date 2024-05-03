@@ -95,8 +95,8 @@ func (r *Repo) GetConfigVersion(
 		coalesce(last_hash, '') as last_hash,
 		coalesce(last_config, '{}') as last_config
 		FROM agent_config_versions v 
-		WHERE element_type = $1 
-		AND version = $2`, typ, v)
+		WHERE element_type = ? 
+		AND version = ?`, typ, v)
 
 	if err == sql.ErrNoRows {
 		return nil, model.NotFoundError(err)

@@ -336,7 +336,7 @@ func UpdateDashboard(ctx context.Context, uuid string, data map[string]interface
 	dashboard.UpdateBy = &userEmail
 	dashboard.Data = data
 
-	_, err = db.Exec("UPDATE dashboards SET updated_at=$1, updated_by=$2, data=$3 WHERE uuid=$4;",
+	_, err = db.Exec("UPDATE dashboards SET updated_at=?, updated_by=?, data=? WHERE uuid=?;",
 		dashboard.UpdatedAt, userEmail, mapData, dashboard.Uuid)
 
 	if err != nil {

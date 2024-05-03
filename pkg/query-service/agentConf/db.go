@@ -56,7 +56,7 @@ func (r *Repo) GetConfigHistory(
 		coalesce(last_hash, '') as last_hash,
 		coalesce(last_config, '{}') as last_config
 		FROM agent_config_versions AS v
-		WHERE element_type = $1
+		WHERE element_type = ?
 		ORDER BY created_at desc, version desc
 		limit %v`, limit),
 		typ)

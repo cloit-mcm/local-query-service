@@ -3,6 +3,7 @@ package model
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -62,13 +63,12 @@ func (uf UserFlag) Value() (driver.Value, error) {
 }
 
 func (uf *UserFlag) Scan(value interface{}) error {
-
-	if value == "" {
-		return nil
-	}
-
-	b, ok := value.(string)
+	uintArray, ok := value.([]uint8)
 	if !ok {
+		return fmt.Errorf("type assertion to []uint8 failed while scanning user flag")
+	}
+	b := string(uintArray)
+	if b == "" {
 		return nil
 	}
 	f := make(map[string]string, 0)

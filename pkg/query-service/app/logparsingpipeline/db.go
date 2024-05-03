@@ -86,7 +86,7 @@ func (r *Repo) insertPipeline(
 
 	insertQuery := `INSERT INTO pipelines 
 	(id, order_id, enabled, created_by, created_at, name, alias, description, filter, config_json) 
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	_, err = r.db.ExecContext(ctx,
 		insertQuery,

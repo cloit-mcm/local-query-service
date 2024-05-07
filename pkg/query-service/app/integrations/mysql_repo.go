@@ -130,8 +130,8 @@ func (r *InstalledIntegrationsSqliteRepo) upsert(
 				config_json
 			) values (?, ?)
 			on duplicate key update
-				config_json = ?
-		`, integrationId, serializedConfig, serializedConfig,
+				config_json = values(config_json)
+		`, integrationId, serializedConfig,
 	)
 	if dbErr != nil {
 		return nil, model.InternalError(fmt.Errorf(

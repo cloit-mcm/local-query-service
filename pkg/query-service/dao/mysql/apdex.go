@@ -58,7 +58,6 @@ func (mds *ModelDaoMysql) SetApdexSettings(ctx context.Context, apdexSettings *m
 		:threshold,
 		:exclude_status_codes
 	) ON DUPLICATE KEY UPDATE
-	    service_name = VALUES(service_name),
 		threshold = VALUES(threshold),
 		exclude_status_codes = VALUES(exclude_status_codes)
 	`, apdexSettings)

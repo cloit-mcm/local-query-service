@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"context"
-
 	"github.com/jmoiron/sqlx"
 	"go.signoz.io/signoz/pkg/query-service/model"
 )
@@ -49,9 +48,8 @@ func (mds *ModelDaoMysql) GetApdexSettings(ctx context.Context, services []strin
 }
 
 func (mds *ModelDaoMysql) SetApdexSettings(ctx context.Context, apdexSettings *model.ApdexSettings) *model.ApiError {
-
 	_, err := mds.db.NamedExec(`
-	INSERT OR REPLACE INTO apdex_settings (
+	INSERT INTO apdex_settings (
 		service_name,
 		threshold,
 		exclude_status_codes
@@ -59,7 +57,11 @@ func (mds *ModelDaoMysql) SetApdexSettings(ctx context.Context, apdexSettings *m
 		:service_name,
 		:threshold,
 		:exclude_status_codes
-	)`, apdexSettings)
+	) ON DUPLICATE KEY UPDATE
+		threshold = VALUES(threshold),
+		exclude_status_codes = VALUES(exclude_status_codes)
+	`, apdexSettings)
+
 	if err != nil {
 		return &model.ApiError{
 			Err: err,

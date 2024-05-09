@@ -241,6 +241,19 @@ func labelsToString(labels map[string]string) string {
 	return fmt.Sprintf("{%s}", strings.Join(labelKVs, ","))
 }
 
+func filterCachedPoints(cachedSeries []*v3.Series, start, end int64) {
+	for _, c := range cachedSeries {
+		points := []v3.Point{}
+		for _, p := range c.Points {
+			if p.Timestamp < start || p.Timestamp > end {
+				continue
+			}
+			points = append(points, p)
+		}
+		c.Points = points
+	}
+}
+
 func mergeSerieses(cachedSeries, missedSeries []*v3.Series) []*v3.Series {
 	// Merge the missed series with the cached series by timestamp
 	mergedSeries := make([]*v3.Series, 0)
@@ -505,7 +518,7 @@ func (q *querier) QueryRange(ctx context.Context, params *v3.QueryRangeParamsV3,
 
 	// return error if the number of series is more than one for value type panel
 	if params.CompositeQuery.PanelType == v3.PanelTypeValue {
-		if len(results) > 1 {
+		if len(results) > 1 && params.CompositeQuery.EnabledQueries() > 1 {
 			err = fmt.Errorf("there can be only one active query for value type panel")
 		} else if len(results) == 1 && len(results[0].Series) > 1 {
 			err = fmt.Errorf("there can be only one result series for value type panel but got %d", len(results[0].Series))

@@ -63,13 +63,13 @@ func (uf UserFlag) Value() (driver.Value, error) {
 }
 
 func (uf *UserFlag) Scan(value interface{}) error {
-	uintArray, ok := value.([]uint8)
-	if !ok {
-		return fmt.Errorf("type assertion to []uint8 failed while scanning user flag")
-	}
-	b := string(uintArray)
-	if b == "" {
+	if value == "" {
 		return nil
+	}
+
+	b, ok := value.(string)
+	if !ok {
+		return fmt.Errorf("type assertion to []byte failed while scanning user flag")
 	}
 	f := make(map[string]string, 0)
 	if err := json.Unmarshal([]byte(b), &f); err != nil {

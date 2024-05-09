@@ -81,12 +81,13 @@ func main() {
 		Cluster:           cluster,
 	}
 
+	// Read the jwt secret key
 	auth.JwtSecret = os.Getenv("SIGNOZ_JWT_SECRET")
 
 	if len(auth.JwtSecret) == 0 {
 		zap.L().Warn("No JWT secret key is specified.")
 	} else {
-		zap.L().Info("No JWT secret key set successfully.")
+		zap.L().Info("JWT secret key set successfully.")
 	}
 
 	server, err := app.NewServer(serverOptions)

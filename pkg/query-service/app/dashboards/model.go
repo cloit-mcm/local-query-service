@@ -37,7 +37,7 @@ var (
 // InitDB sets up setting up the connection pool global variable.
 func InitDB(dataSourceName string) (*sqlx.DB, error) {
 	var err error
-	db, err = sqlx.Open("mysql", "signoz:zmffhdlt#101@(3.35.121.170:13306)/signoz_meta?parseTime=true")
+	db, err = sqlx.Open("mysql", dataSourceName)
 	if err != nil {
 		return nil, err
 	}

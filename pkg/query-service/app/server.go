@@ -5,15 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"go.signoz.io/signoz/pkg/query-service/agentConf"
-	"go.signoz.io/signoz/pkg/query-service/app/clickhouseReader"
-	"go.signoz.io/signoz/pkg/query-service/app/dashboards"
-	"go.signoz.io/signoz/pkg/query-service/app/explorer"
-	"go.signoz.io/signoz/pkg/query-service/app/integrations"
-	"go.signoz.io/signoz/pkg/query-service/app/logparsingpipeline"
-	opAmpModel "go.signoz.io/signoz/pkg/query-service/app/opamp/model"
-	"go.signoz.io/signoz/pkg/query-service/dao"
-	"go.signoz.io/signoz/pkg/query-service/model"
 	"io"
 	"net"
 	"net/http"
@@ -29,16 +20,25 @@ import (
 
 	"github.com/rs/cors"
 	"github.com/soheilhy/cmux"
+	"go.signoz.io/signoz/pkg/query-service/agentConf"
+	"go.signoz.io/signoz/pkg/query-service/app/clickhouseReader"
+	"go.signoz.io/signoz/pkg/query-service/app/dashboards"
+	"go.signoz.io/signoz/pkg/query-service/app/integrations"
+	"go.signoz.io/signoz/pkg/query-service/app/logparsingpipeline"
 	"go.signoz.io/signoz/pkg/query-service/app/opamp"
+	opAmpModel "go.signoz.io/signoz/pkg/query-service/app/opamp/model"
 	v3 "go.signoz.io/signoz/pkg/query-service/model/v3"
 
+	"go.signoz.io/signoz/pkg/query-service/app/explorer"
 	"go.signoz.io/signoz/pkg/query-service/auth"
 	"go.signoz.io/signoz/pkg/query-service/cache"
 	"go.signoz.io/signoz/pkg/query-service/constants"
+	"go.signoz.io/signoz/pkg/query-service/dao"
 	"go.signoz.io/signoz/pkg/query-service/featureManager"
 	"go.signoz.io/signoz/pkg/query-service/healthcheck"
 	am "go.signoz.io/signoz/pkg/query-service/integrations/alertManager"
 	"go.signoz.io/signoz/pkg/query-service/interfaces"
+	"go.signoz.io/signoz/pkg/query-service/model"
 	pqle "go.signoz.io/signoz/pkg/query-service/pqlEngine"
 	"go.signoz.io/signoz/pkg/query-service/rules"
 	"go.signoz.io/signoz/pkg/query-service/telemetry"
@@ -165,7 +165,7 @@ func NewServer(serverOptions *ServerOptions) (*Server, error) {
 	}
 
 	logParsingPipelineController, err := logparsingpipeline.NewLogParsingPipelinesController(
-		localDB, "sqlite", integrationsController.GetPipelinesForInstalledIntegrations,
+		localDB, "mysql", integrationsController.GetPipelinesForInstalledIntegrations,
 	)
 	if err != nil {
 		return nil, err
@@ -255,12 +255,7 @@ func (s *Server) createPrivateServer(api *APIHandler) (*http.Server, error) {
 		AllowedMethods: []string{"GET", "DELETE", "POST", "PUT", "PATCH"},
 		AllowedHeaders: []string{"Accept", "Authorization", "Content-Type"},
 	})
-	_ = r.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
-		tpl, err1 := route.GetPathTemplate()
-		met, err2 := route.GetMethods()
-		fmt.Println(tpl, err1, met, err2)
-		return nil
-	})
+
 	handler := c.Handler(r)
 	handler = handlers.CompressHandler(handler)
 
@@ -281,7 +276,6 @@ func (s *Server) createPublicServer(api *APIHandler) (*http.Server, error) {
 	am := NewAuthMiddleware(auth.GetUserFromRequest)
 
 	api.RegisterRoutes(r, am)
-	api.RegisterMetricsRoutes(r, am)
 	api.RegisterLogsRoutes(r, am)
 	api.RegisterIntegrationRoutes(r, am)
 	api.RegisterQueryRangeV3Routes(r, am)

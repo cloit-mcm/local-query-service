@@ -3,6 +3,8 @@ package mysql
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -10,7 +12,6 @@ import (
 	"go.signoz.io/signoz/pkg/query-service/model"
 	"go.signoz.io/signoz/pkg/query-service/telemetry"
 	"go.uber.org/zap"
-	"strings"
 )
 
 type ModelDaoMysql struct {
@@ -21,7 +22,7 @@ type ModelDaoMysql struct {
 func InitDB(dataSourceName string) (*ModelDaoMysql, error) {
 	var err error
 
-	db, err := sqlx.Open("mysql", "signoz:zmffhdlt#101@(3.35.121.170:13306)/signoz_meta?parseTime=true")
+	db, err := sqlx.Open("mysql", dataSourceName)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to Open mysql DB")
 	}
